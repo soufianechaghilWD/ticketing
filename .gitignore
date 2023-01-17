@@ -6,3 +6,5 @@ skaffold.yaml
 
 client/node_modules
 .next
+
+common/node_modules
