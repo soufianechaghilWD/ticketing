@@ -1,3 +1,8 @@
+.kpt-pipeline
+
 auth/node_modules
 infra
 skaffold.yaml
+
+client/node_modules
+.next
