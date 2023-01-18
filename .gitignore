@@ -8,3 +8,5 @@ client/node_modules
 .next
 
 common/node_modules
+
+tickets/node_modules
