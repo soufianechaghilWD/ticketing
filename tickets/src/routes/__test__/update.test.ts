@@ -1,8 +1,7 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { isTypePredicateNode } from 'typescript';
 import { app } from '../../app';
-import { Ticket } from '../../models/ticket';
+import { natsWrapper } from '../../nats-wrapper';
 
 it('returns a 404 if the provided id does not exist', async () => {
   const id = new mongoose.Types.ObjectId().toHexString();
@@ -103,4 +102,28 @@ it('updates the ticket provided valid inputs', async () => {
     .send();
   expect(ticketResponse.body.title).toEqual(title);
   expect(ticketResponse.body.price).toEqual(price);
+});
+
+it('publishes an event', async () => {
+  const cookie = global.signin();
+  const title = 'new concert';
+  const price = 100;
+  const response = await request(app)
+    .post('/api/tickets')
+    .set('Cookie', cookie)
+    .send({
+      title: 'concert',
+      price: 20,
+    });
+
+  await request(app)
+    .put(`/api/tickets/${response.body.id}`)
+    .set('Cookie', cookie)
+    .send({
+      title,
+      price,
+    })
+    .expect(200);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
 });
